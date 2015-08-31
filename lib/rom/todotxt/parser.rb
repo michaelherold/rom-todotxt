@@ -23,7 +23,7 @@ module ROM
       end
 
       def parse
-        %i(parse_contexts parse_priority parse_projects parse_task)
+        %w[parse_contexts parse_priority parse_projects parse_task]
           .map { |method| __send__(method) }
           .reduce(:merge)
       end
