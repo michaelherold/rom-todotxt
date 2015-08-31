@@ -1,0 +1,5 @@
+(A) Thing I need to do +project +project2 @context @context2
+Priorityless thing I need to do +project @context
+(A) Projectless thing I need to do @context
+(A) Contextless thing I need to do +project
+Bare thing I need to do

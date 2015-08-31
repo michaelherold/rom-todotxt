@@ -6,6 +6,8 @@ module ROM
     #
     # @api public
     class Relation < ROM::Relation
+      adapter :todotxt
+      forward :join, :order, :project, :restrict
     end
   end
 end
