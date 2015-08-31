@@ -4,6 +4,7 @@ gem 'rake'
 
 group :test do
   gem 'activesupport'
+  gem 'codeclimate-test-reporter', require: nil
   gem 'pry'
   gem 'rspec', '~> 3.2'
 end
