@@ -1,20 +1,38 @@
 require 'rom/support/inflector'
+require 'rom/todotxt/parser/commands'
 
 module ROM
   module TodoTxt
     class Parser
+      # Ensure Commands module is initialized
+      module Commands; end
+
       def initialize(row)
         @row = row.dup
       end
 
+      def method_missing(method_name, *args, &block)
+        command_name = command_name_for_method(method_name)
+
+        if Commands.const_defined?(command_name)
+          command_class = Commands.const_get(command_name)
+          command_class.new(@row, *args, &block).call
+        else
+          super
+        end
+      end
+
       def parse
-        private_methods
-          .select { |method_name| method_name.to_s.start_with?('parse_') }
+        %i(parse_contexts parse_priority parse_projects parse_task)
           .map { |method| __send__(method) }
           .reduce(:merge)
       end
 
       private
+
+      def command_name_for_method(method_name)
+        method_name.to_s.gsub(/(?:^|_)([a-z])/) { Regexp.last_match[1].upcase }
+      end
 
       def construct_attr(name, data)
         data = Array(data)
@@ -32,18 +50,6 @@ module ROM
           priority: /(?:^|\s+)\((?<priority>[A-Za-z])\)\s+/.freeze,
           project: /(?:^|\s+)\+(?<projects>\w+)/.freeze
         }.freeze
-      end
-
-      def parse_context
-        construct_attr(:context, @row.scan(parsers[:context]).flatten)
-      end
-
-      def parse_priority
-        construct_attr(:priority, @row.scan(parsers[:priority]).flatten)
-      end
-
-      def parse_project
-        construct_attr(:project, @row.scan(parsers[:project]).flatten)
       end
 
       def parse_task
